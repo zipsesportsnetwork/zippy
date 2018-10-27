@@ -34,11 +34,15 @@ module.exports = async (input) => {
                     }).slice(2))
                 ];
             }));
+
+            console.log('config reloaded');
         },
         get() {
             return JSON.parse(JSON.stringify(config));
         },
     };
+
+    setInterval(() => out.refresh().catch(console.error), 60 * 1000);
 
     await out.refresh();
 

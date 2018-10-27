@@ -2,8 +2,6 @@ module.exports = async (c, s) => {
     const client = await (await s).discord;
 
     client.on('raw', async (packet) => {
-        await c.refresh();
-
         const {
             discord,
             discord_games: mappings,
