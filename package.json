@@ -1,0 +1,13 @@
+{
+  "name": "zippy",
+  "private": true,
+  "dependencies": {
+    "async": "^2.6.1",
+    "fs-extra": "^7.0.0",
+    "koa": "^2.5.3",
+    "koa-router": "^7.4.0",
+    "p-defer": "^1.0.0",
+    "discord.js": "^11.4.2",
+    "googleapis": "^33.0.0"
+  }
+}
