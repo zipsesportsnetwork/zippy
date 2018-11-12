@@ -17,7 +17,7 @@ module.exports = async (c, s) => {
         // kill me
 
         if (![
-            'MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE'
+            'MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE',
         ].includes(packet.t) || packet.d.channel_id !== channels.picker) {
             return;
         }
@@ -29,7 +29,7 @@ module.exports = async (c, s) => {
 
             if (typeof mapped !== 'undefined') {
                 const member = await guild.fetchMember(user_id);
-                const role = guild.roles.find(r => r.name === mapped);
+                const role = guild.roles.find((r) => r.name === mapped);
 
                 if (typeof role === 'undefined') return;
 

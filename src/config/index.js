@@ -1,8 +1,4 @@
-const async = require('async');
-
 const { google } = require('googleapis');
-
-const { promisify } = require('util');
 
 module.exports = async (input) => {
     const auth = await require('./auth.js')(input);
@@ -15,25 +11,23 @@ module.exports = async (input) => {
     });
 
     // naming skill: 100
-    const objectify = (a) => a.reduce((o, [k, v]) => ({...o, [k]: v}), {});
+    const objectify = (a) => a.reduce((o, [k, v]) => ({ ...o, [k]: v }), {});
 
-    let out = {
+    const out = {
         async refresh() {
             // okay nvm fuck gsheets
             config = objectify((await sheets.spreadsheets.get({
                 spreadsheetId,
                 includeGridData: true,
                 auth,
-            })).data.sheets.map((sheet) => {
-                return [
-                    sheet.properties.title,
-                    objectify(sheet.data[0].rowData.map((row) => {
-                        return (row.values || []).map((cell) => {
-                            return cell.formattedValue
-                        });
-                    }).slice(2))
-                ];
-            }));
+            })).data.sheets.map((sheet) => [
+                sheet.properties.title,
+                objectify(
+                    sheet.data[0].rowData
+                        .map((row) => (row.values || []).map((cell) => cell.formattedValue))
+                        .slice(2),
+                ),
+            ]));
 
             console.log('config reloaded');
         },

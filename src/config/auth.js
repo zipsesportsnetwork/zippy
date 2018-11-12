@@ -1,7 +1,5 @@
 const fs = require('fs-extra');
 
-const http = require('http');
-
 const { google } = require('googleapis');
 const { OAuth2 } = google.auth;
 
@@ -11,13 +9,13 @@ module.exports = async (input) => {
     const auth = new OAuth2(
         input.google.client_id,
         input.google.client_secret,
-        input.google.redirect_uri
+        input.google.redirect_uri,
     );
 
     const url = auth.generateAuthUrl({
         access_type: 'offline',
         scope: [
-            'https://www.googleapis.com/auth/spreadsheets.readonly'
+            'https://www.googleapis.com/auth/spreadsheets.readonly',
         ],
     });
 
@@ -28,8 +26,10 @@ module.exports = async (input) => {
             const Koa = require('koa');
             const Router = require('koa-router');
 
-            let app = new Koa();
-            let router = new Router();
+            const app = new Koa();
+            const router = new Router();
+
+            let server;
 
             router.get('/bot/', (ctx) => ctx.redirect(url));
 
@@ -37,9 +37,7 @@ module.exports = async (input) => {
                 const { code } = ctx.request.query;
 
                 if (typeof code !== 'undefined') {
-                    let credentials = await auth.getToken(code);
-
-                    tokens = credentials.tokens;
+                    ({ tokens } = await auth.getToken(code));
 
                     await fs.writeJson('./tokens.json', tokens);
                 }
@@ -52,7 +50,7 @@ module.exports = async (input) => {
 
             app.use(router.routes());
 
-            const server = require('http').createServer(app.callback()).listen(3001);
+            server = require('http').createServer(app.callback()).listen(3001);
 
             console.log('waiting for auth');
         });
@@ -61,4 +59,4 @@ module.exports = async (input) => {
     auth.credentials = tokens;
 
     return auth;
-}
+};

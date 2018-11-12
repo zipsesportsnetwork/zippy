@@ -3,11 +3,17 @@
   "private": true,
   "dependencies": {
     "async": "^2.6.1",
+    "discord.js": "^11.4.2",
     "fs-extra": "^7.0.0",
+    "googleapis": "^33.0.0",
     "koa": "^2.5.3",
     "koa-router": "^7.4.0",
     "p-defer": "^1.0.0",
-    "discord.js": "^11.4.2",
-    "googleapis": "^33.0.0"
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.8.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0"
   }
 }

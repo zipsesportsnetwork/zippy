@@ -1,6 +1,4 @@
-let state;
-
-module.exports = (c, s) => {
+module.exports = (c) => {
     const { discord: config } = c.get();
     const deferred = require('p-defer')();
     const client = new (require('discord.js')).Client();
@@ -10,12 +8,16 @@ module.exports = (c, s) => {
     let status = false;
 
     const resolve = () => {
-        !status && deferred.resolve(client);
+        if (!status) {
+            deferred.resolve(client);
+        }
         status = true;
     };
 
     const reject = () => {
-        !status && deferred.reject();
+        if (!status) {
+            deferred.reject();
+        }
         status = true;
     };
 

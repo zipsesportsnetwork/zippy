@@ -12,20 +12,22 @@ module.exports = async (c, s) => {
     const discord = await state.discord;
     const sling = await state.sling;
 
-    const getMapping = (position, id) => (Object.entries(mappings).find((mapping) => mapping[1 - position] === id) || [null, null])[position];
+    const getMapping = (position, id) => (
+        Object.entries(mappings)
+            .find((mapping) => mapping[1 - position] === id) || [null, null]
+    )[position];
 
     // based on column number (and subsequently the position in the resulting array) from sheet
     const getSlingConversation = (id) => getMapping(0, id);
     const getDiscordChannel = (id) => getMapping(1, id);
 
     let slingKeys;
-    let slingCache = {};
+    const slingCache = {};
 
     const checkSling = async () => {
         slingKeys = Object.keys(mappings);
 
-        for (var i = 0; i < slingKeys.length; i++) {
-            const conversation = slingKeys[i];
+        for (const conversation of slingKeys) {
             const messages = await sling.getMessages(conversation);
 
             if (typeof slingCache[conversation] === 'undefined') {
@@ -33,9 +35,11 @@ module.exports = async (c, s) => {
             } else {
                 // todo: add nicer way to check for mentions in sling messages
 
-                let newMessages = messages
-                    .slice(0, messages.findIndex((message) => message.id === slingCache[conversation]))
-                    .filter((message) => message.author.email !== config.email && message.content.indexOf('@everyone') > -1);
+                const newMessages = messages
+                    .slice(0, messages.findIndex((message) => message.id
+                        === slingCache[conversation])) // reeeeeeeee this looks so stupid
+                    .filter((message) => message.author.email !== config.email
+                        && message.content.indexOf('@everyone') > -1);
 
                 if (newMessages.length > 0) {
                     slingCache[conversation] = newMessages[newMessages.length - 1].id;
@@ -43,9 +47,7 @@ module.exports = async (c, s) => {
 
                 newMessages.reverse();
 
-                for (var j = 0; j < newMessages.length; j++) {
-                    const newMessage = newMessages[j];
-
+                for (const newMessage of newMessages) {
                     await discord.channels.get(getDiscordChannel(conversation)).send(`**${newMessage.author.name} ${newMessage.author.lastname}** (bridged): \n\n${newMessage.content} ${newMessage.attachments.map((attachment) => attachment.url).join(' ')}`);
                 }
             }
@@ -53,11 +55,11 @@ module.exports = async (c, s) => {
     };
 
     const uploadSling = async (attachments) => {
-        let out = [];
+        const out = [];
 
-        for (var i = 0; i < attachments.length; i++) {
-            const attachment = attachments[i];
+        // todo: use array.map and promise.all here instead
 
+        for (const attachment of attachments) {
             out.push(await sling.uploadFile(request({
                 uri: attachment.url,
                 encoding: null,
@@ -73,7 +75,7 @@ module.exports = async (c, s) => {
         const mapped = getSlingConversation(message.channel.id);
 
         if (mapped !== null && message.author.id !== discord.user.id && message.mentions.everyone) {
-            await sling.sendMessage(mapped, '**' + message.member.nickname + '** (bridged): \n\n' + message.content, await uploadSling(message.attachments.array()));
+            await sling.sendMessage(mapped, `**${message.member.nickname}** (bridged): \n\n${message.content}`, await uploadSling(message.attachments.array()));
         }
     });
 

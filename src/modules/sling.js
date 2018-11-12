@@ -1,6 +1,6 @@
 const request = require('request-promise');
 
-module.exports = async (c, s) => {
+module.exports = async (c) => {
     const { sling: config } = c.get();
     const { email, password } = config;
 
@@ -23,11 +23,13 @@ module.exports = async (c, s) => {
         json: true,
     });
 
+    /*
     const users = await request({
         uri: 'https://api.sling.is/v1/users',
         headers: { authorization },
         json: true,
     });
+    */
 
     const mentionablesIncoming = groups
         .filter((group) => group.type === 'everyone')
@@ -38,7 +40,7 @@ module.exports = async (c, s) => {
         .map((everyone) => [new RegExp('@everyone', 'g'), `@everyone[${everyone.id}]`]);
 
     return {
-        async sendMessage(conversation_id, message, attachments) {
+        async sendMessage(conversation, message, attachments) {
             let content = message;
 
             mentionablesOutgoing.forEach((mentionable) => {
@@ -46,8 +48,8 @@ module.exports = async (c, s) => {
                 content = content.replace(regexp, replacement);
             });
 
-            return await request({
-                uri: `https://api.sling.is/v1/conversations/${conversation_id}/messages`,
+            return request({
+                uri: `https://api.sling.is/v1/conversations/${conversation}/messages`,
                 method: 'POST',
                 headers: { authorization },
                 body: {
@@ -57,12 +59,13 @@ module.exports = async (c, s) => {
                 json: true,
             });
         },
-        async getMessages(conversation_id) {
+        async getMessages(conversation) {
             return (await request({
-                uri: `https://api.sling.is/v1/conversations/${conversation_id}/messages`,
+                uri: `https://api.sling.is/v1/conversations/${conversation}/messages`,
                 headers: { authorization },
                 json: true,
-            })).map((message) => {
+            })).map((m) => {
+                const message = m;
                 mentionablesIncoming.forEach((mentionable) => {
                     const [regexp, replacement] = mentionable;
                     message.content = message.content.replace(regexp, replacement);
@@ -71,7 +74,7 @@ module.exports = async (c, s) => {
             });
         },
         async uploadFile(file) {
-            return await request({
+            return request({
                 uri: 'https://api.sling.is/v1/upload/image',
                 method: 'POST',
                 headers: { authorization },
