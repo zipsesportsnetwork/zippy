@@ -1,5 +1,5 @@
 module.exports = async (c, s) => {
-    const client = await (await s).discord;
+    const { client } = await (await s).discord;
 
     client.on('raw', async (packet) => {
         const {

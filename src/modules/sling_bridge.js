@@ -9,7 +9,7 @@ module.exports = async (c, s) => {
     } = c.get();
 
     const state = await s;
-    const discord = await state.discord;
+    const { client: discord } = await state.discord;
     const sling = await state.sling;
 
     const getMapping = (position, id) => (

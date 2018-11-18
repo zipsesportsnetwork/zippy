@@ -1,7 +1,8 @@
 module.exports = (c) => {
     const { discord: config } = c.get();
     const deferred = require('p-defer')();
-    const client = new (require('discord.js')).Client();
+    const discord = require('discord.js');
+    const client = new discord.Client();
 
     // todo: make this not look fucking stupid
 
@@ -28,5 +29,17 @@ module.exports = (c) => {
 
     client.login(config.token);
 
-    return deferred.promise;
+    return deferred.promise.then((ready) => ({
+        client: ready,
+        output(author, icon, title, description, attachment) {
+            let out = (new discord.RichEmbed())
+                .setAuthor(author, icon)
+                .setTitle(title)
+                .setDescription(description);
+
+            if (typeof attachment !== 'undefined') out = out.setImage(attachment);
+
+            return out;
+        },
+    }));
 };
