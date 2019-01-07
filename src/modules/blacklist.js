@@ -18,6 +18,12 @@ module.exports = async (c, s) => {
                     case 'delete':
                         await message.delete();
                         break;
+                    case 'kick':
+                        await message.author.kick(JSON.stringify(message.cleanContent));
+                        break;
+                    case 'ban':
+                        await message.author.ban(JSON.stringify(message.cleanContent));
+                        break;
                     default:
                         break;
                 }
