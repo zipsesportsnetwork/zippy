@@ -75,7 +75,7 @@ module.exports = async (c, s) => {
         const mapped = getSlingConversation(message.channel.id);
 
         if (mapped !== null && message.author.id !== discord.user.id && message.mentions.everyone) {
-            await sling.sendMessage(mapped, `**${message.member.nickname}** (bridged): \n\n${message.content}`, await uploadSling(message.attachments.array()));
+            await sling.sendMessage(mapped, `**${message.member.displayName}** (bridged): \n\n${message.cleanContent}`, await uploadSling(message.attachments.array()));
         }
     });
 
