@@ -14,11 +14,10 @@ module.exports = async (c, s) => {
                 .find((phrase) => text.includes(phrase.toLowerCase()));
 
             if (typeof action !== 'undefined') {
+                await message.delete();
+
                 switch (blacklist[action].toLowerCase()) {
-                    case 'delete':
-                        await message.delete();
-                        break;
-                    case 'kick': // todo: add spot for reason in config
+                    case 'kick':
                         await message.author.kick(JSON.stringify(message.cleanContent));
                         break;
                     case 'ban':
