@@ -15,7 +15,7 @@ module.exports = async (input) => {
     const url = auth.generateAuthUrl({
         access_type: 'offline',
         scope: [
-            'https://www.googleapis.com/auth/spreadsheets.readonly',
+            'https://www.googleapis.com/auth/spreadsheets',
         ],
     });
 

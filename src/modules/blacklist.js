@@ -18,7 +18,7 @@ module.exports = async (c, s) => {
                     case 'delete':
                         await message.delete();
                         break;
-                    case 'kick':
+                    case 'kick': // todo: add spot for reason in config
                         await message.author.kick(JSON.stringify(message.cleanContent));
                         break;
                     case 'ban':

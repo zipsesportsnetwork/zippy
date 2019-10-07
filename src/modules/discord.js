@@ -37,7 +37,10 @@ module.exports = (c) => {
                 .setTitle(title)
                 .setDescription(description);
 
-            if (typeof attachment !== 'undefined') out = out.setImage(attachment);
+            if (typeof attachment !== 'undefined') {
+                out = out.attachFile({ attachment, name: 'file.jpg' })
+                    .setImage('attachment://file.jpg');
+            }
 
             return out;
         },

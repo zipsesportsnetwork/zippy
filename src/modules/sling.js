@@ -1,19 +1,21 @@
 const request = require('request-promise');
 
+const login = async (email, password) => (await request({
+    uri: 'https://api.sling.is/v1/account/login',
+    method: 'POST',
+    resolveWithFullResponse: true,
+    body: {
+        email,
+        password,
+    },
+    json: true,
+})).headers.authorization;
+
 module.exports = async (c) => {
     const { sling: config } = c.get();
     const { email, password } = config;
 
-    const { authorization } = (await request({
-        uri: 'https://api.sling.is/v1/account/login',
-        method: 'POST',
-        resolveWithFullResponse: true,
-        body: {
-            email,
-            password,
-        },
-        json: true,
-    })).headers;
+    const authorization = await login(email, password);
 
     // todo: compile mentionables from these:
 

@@ -4,6 +4,7 @@ module.exports = async (input) => {
     const auth = await require('./auth.js')(input);
 
     const { spreadsheetId } = input;
+    let raw = null;
     let config = null;
 
     const sheets = google.sheets({
@@ -16,11 +17,26 @@ module.exports = async (input) => {
     const out = {
         async refresh() {
             // okay nvm fuck gsheets
-            config = objectify((await sheets.spreadsheets.get({
+            const temp = (await sheets.spreadsheets.get({
                 spreadsheetId,
                 includeGridData: true,
                 auth,
-            })).data.sheets.map((sheet) => [
+            }));
+            raw = temp.data.sheets.map((sheet) => {
+                return [
+                    sheet.properties.title,
+                    sheet.data[0].rowData
+                        .map((row) => (row.values || []).map((cell) => cell.formattedValue))
+                        .slice(2)
+                        .filter((row) => !row.every((value) => value === null)),
+                ];
+            }).reduce((rows, row) => {
+                const obj = rows;
+                // eslint-disable-next-line prefer-destructuring
+                obj[row[0]] = row.slice(1)[0];
+                return obj;
+            }, {});
+            config = objectify(temp.data.sheets.map((sheet) => [
                 sheet.properties.title,
                 objectify(
                     sheet.data[0].rowData
@@ -33,6 +49,15 @@ module.exports = async (input) => {
         },
         get() {
             return JSON.parse(JSON.stringify(config));
+        },
+        raw() {
+            return JSON.parse(JSON.stringify(raw));
+        },
+        input() {
+            return JSON.parse(JSON.stringify(input));
+        },
+        auth() { // todo: make a 'google' module
+            return auth;
         },
     };
 
