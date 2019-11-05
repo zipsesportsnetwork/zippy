@@ -1,6 +1,7 @@
 {
   "name": "zippy",
   "private": true,
+  "license": "MIT",
   "dependencies": {
     "async": "^2.6.1",
     "deep-extend": "^0.6.0",
