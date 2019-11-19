@@ -1,8 +1,7 @@
 <p align="center">
-    <figure>
-        <img alt="Zippy bot avatar" src="doc/avatar.png" width="400"/>
-        <figcaption>Avatar designed by Sydney Meighen (<a href="https://github.com/sydmeg">@sydmeg</a>)</figcaption>
-    </figure>
+  <a href="https://nodejs.org/"><img alt="Zippy bot avatar" src="doc/avatar.png" width="400"/></a>
+  <br>
+  <span>Avatar designed by Sydney Meighen (<a href="https://github.com/sydmeg">@sydmeg</a>)</span>
 </p>
 
 # The "Zippy" Discord Bot
