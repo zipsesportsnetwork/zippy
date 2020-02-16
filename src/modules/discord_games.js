@@ -8,6 +8,8 @@ module.exports = async (c, s) => {
             _discord_channels: channels,
         } = c.get();
 
+        
+
         const guild = client.guilds.get(discord.guild);
 
         // discord.js apparently doesn't bother caching reactions on old
@@ -16,28 +18,40 @@ module.exports = async (c, s) => {
         //
         // kill me
 
+        // hacky shit until we rewrite
+        let tempConfig = JSON.parse(channels.customEmotes || '{}');
+        tempConfig[channels.picker] = mappings;
+
+        const channelsToListenTo = Object.keys(tempConfig).concat(channels.picker);
+
         if (![
             'MESSAGE_REACTION_ADD', 'MESSAGE_REACTION_REMOVE',
-        ].includes(packet.t) || packet.d.channel_id !== channels.picker) {
+        ].includes(packet.t) || !channelsToListenTo.includes(packet.d.channel_id)) {
             return;
         }
 
         const { emoji, user_id } = packet.d;
 
-        if (emoji.id === null || guild.emojis.has(emoji.id)) {
-            const mapped = mappings[emoji.name];
+        let emote;
 
-            if (typeof mapped !== 'undefined') {
-                const member = await guild.fetchMember(user_id);
-                const role = guild.roles.find((r) => r.name === mapped);
+        if (emoji.id === null) {
+            emote = emoji.name;
+        } else {
+            emote = emoji.id;
+        }
 
-                if (typeof role === 'undefined') return;
+        const mapped = tempConfig[packet.d.channel_id][emote];
 
-                if (packet.t === 'MESSAGE_REACTION_ADD') {
-                    await member.addRole(role);
-                } else {
-                    await member.removeRole(role);
-                }
+        if (typeof mapped !== 'undefined') {
+            const member = await guild.fetchMember(user_id);
+            const role = guild.roles.find((r) => r.id === mapped);
+                
+            if (typeof role === 'undefined') return;
+
+            if (packet.t === 'MESSAGE_REACTION_ADD') {
+                await member.addRole(role);
+            } else {
+                await member.removeRole(role);
             }
         }
     });
@@ -46,3 +60,5 @@ module.exports = async (c, s) => {
 
     return true;
 };
+
+
