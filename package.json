@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "async": "^2.6.1",
+    "async": "^2.6.4",
     "deep-extend": "^0.6.0",
     "discord.js": "^11.4.2",
     "email-addresses": "^3.0.3",
